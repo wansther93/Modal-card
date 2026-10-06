@@ -1028,7 +1028,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                     : 'bg-black text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                <Layers className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'progress' ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Layers className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'progress' ? 'text-amber-400' : 'text-slate-400'}`} />
                 <span className="text-[10px] sm:text-xs leading-none tracking-tight">Progresso</span>
               </button>
 
@@ -1042,7 +1042,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                     : 'bg-black text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                <BookOpen className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'info' ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <BookOpen className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'info' ? 'text-amber-400' : 'text-slate-400'}`} />
                 <span className="text-[10px] sm:text-xs leading-none tracking-tight">Infos</span>
               </button>
 
@@ -1056,7 +1056,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                     : 'bg-black text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                <Users className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'characters' ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Users className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'characters' ? 'text-amber-400' : 'text-slate-400'}`} />
                 <span className="text-[10px] sm:text-xs leading-none tracking-tight">Elenco</span>
               </button>
 
@@ -1070,7 +1070,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                     : 'bg-black text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                <Music className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'music' ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Music className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'music' ? 'text-amber-400' : 'text-slate-400'}`} />
                 <span className="text-[10px] sm:text-xs leading-none tracking-tight">Músicas</span>
               </button>
 
@@ -1084,7 +1084,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                     : 'bg-black text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                <Film className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'media' ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Film className={`w-4 h-4 mb-1 transition-colors ${activeTab === 'media' ? 'text-amber-400' : 'text-slate-400'}`} />
                 <span className="text-[10px] sm:text-xs leading-none tracking-tight">Onde Ver</span>
               </button>
             </div>
@@ -1093,8 +1093,8 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
           {/* ============================================================
               CONTEÚDO DA SEÇÃO ATIVA
              ============================================================ */}
-          <div className="p-3.5 sm:p-5 space-y-4 flex-1">
-          {/* SEÇÃO 1: PROGRESSO (CONTROLE DE EPISÓDIOS, NOTA E LINHA DO TEMPO) */}
+          <div className="p-3.5 sm:p-5 pb-12 sm:pb-16 space-y-4 flex-1">
+          {/* SEÇÃO 1: PROGRESSO - TRILHA CONTÍNUA NATIVA (PROPOSTA 1: ZERO CAIXAS / ZERO CONTAINERS) */}
           {activeTab === 'progress' && (() => {
             const currentSeasonIndex = (anime.seasons || []).findIndex(s => s.name === anime.currentSeasonName);
             const nextSeason = currentSeasonIndex !== -1 && anime.seasons && currentSeasonIndex + 1 < anime.seasons.length
@@ -1126,539 +1126,449 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                 : allSeasons;
 
             return (
-              <div className="space-y-4 animate-in fade-in duration-150">
-                {/* Banner de Avanço Automático para Próxima Temporada */}
+              <div className="space-y-6 animate-in fade-in duration-150">
+                {/* 1. Alerta Leve de Temporada Concluída (se aplicável, sem caixa fechada) */}
                 {isCurrentSeasonCompleted && nextSeason && !isReadOnly && onSwitchSeason && (
-                  <div className="p-3 rounded-2xl bg-gradient-to-r from-indigo-950/80 to-purple-950/80 border border-indigo-500/40 flex items-center justify-between gap-3 flex-wrap shadow-lg">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h5 className="text-xs font-black text-white">Temporada Concluída!</h5>
-                        <p className="text-[11px] text-slate-300">Pronto para começar: <strong className="text-indigo-300">{nextSeason.name}</strong>?</p>
-                      </div>
+                  <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <p className="text-xs text-zinc-200 truncate">
+                        Concluiu! Avançar para <strong className="text-amber-300">{nextSeason.name}</strong>?
+                      </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => onSwitchSeason(anime, nextSeason)}
-                      className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/30 ml-auto border border-indigo-400/30"
+                      className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1 shadow-sm"
                     >
-                      <Play className="w-3.5 h-3.5 fill-white" />
-                      <span>Avançar para {nextSeason.name}</span>
+                      <Play className="w-3 h-3 fill-black" />
+                      <span>Avançar</span>
                     </button>
                   </div>
                 )}
 
-                {/* 1. CONTROLE DIRETO DA TEMPORADA ATIVA E EPISÓDIOS */}
-                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300">
-                          Temporada em Andamento
-                        </span>
-                      </div>
-                      <h4 className="text-sm sm:text-base font-black text-white truncate drop-shadow-sm mt-0.5">
-                        {anime.currentSeasonName || 'Temporada 1'}
-                      </h4>
-                    </div>
-
-                    {!isReadOnly && onIncrement && onDecrement && (
-                      <div className="flex items-center gap-2 self-start sm:self-auto">
-                        <div className="flex items-baseline gap-1 mr-1">
-                          <span className="text-xl sm:text-2xl font-black text-white tabular-nums">
-                            Ep {anime.currentEpisode}
-                          </span>
-                          {maxEp ? (
-                            <span className="text-xs font-bold text-slate-400 tabular-nums">
-                              / {maxEp}
-                            </span>
-                          ) : null}
-                        </div>
-
-                        <button
-                          id="detail-btn-minus-ep"
-                          onClick={() => onDecrement(anime)}
-                          disabled={anime.currentEpisode <= 0}
-                          className="w-8 h-8 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 disabled:opacity-30 disabled:pointer-events-none text-white font-bold text-xs flex items-center justify-center border border-white/10 transition-all cursor-pointer"
-                          title="Diminuir episódio"
-                        >
-                          <Minus className="w-3.5 h-3.5" />
-                        </button>
-
-                        <button
-                          id="detail-btn-plus-ep"
-                          onClick={() => onIncrement(anime)}
-                          className="px-3.5 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-black text-xs flex items-center gap-1 border border-indigo-400/40 shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
-                          title="Avançar episódio"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>+1</span>
-                        </button>
-
-                        {!isEditingDirectEp ? (
-                          <button
-                            onClick={() => {
-                              setDirectEpInput(String(anime.currentEpisode));
-                              setIsEditingDirectEp(true);
-                            }}
-                            className="text-[11px] text-indigo-400 hover:text-indigo-300 underline underline-offset-2 ml-1 cursor-pointer font-medium whitespace-nowrap"
-                          >
-                            Digitar
-                          </button>
-                        ) : (
-                          <div className="flex items-center gap-1 ml-1">
-                            <input
-                              type="number"
-                              min="0"
-                              value={directEpInput}
-                              onChange={(e) => setDirectEpInput(e.target.value)}
-                              className="w-14 bg-black border border-indigo-500 rounded-lg px-2 py-0.5 text-xs text-white text-center focus:outline-none"
-                              autoFocus
-                            />
-                            <button
-                              onClick={handleSaveDirectEp}
-                              className="p-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-xs cursor-pointer"
-                            >
-                              <Check className="w-3 h-3" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Barra de Progresso Fluida */}
-                  {progressPercent !== null && (
-                    <div className="w-full space-y-1 pt-1">
-                      <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-400 transition-all duration-300 rounded-full"
-                          style={{ width: `${progressPercent}%` }}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
-                        <span>{progressPercent}% concluído</span>
-                        <span>{maxEp ? `${Math.max(0, maxEp - anime.currentEpisode)} eps restantes` : ''}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* 2. SUA NOTA PESSOAL (SLIDER TÁTIL DE 1 A 10 EM LINHA ÚNICA) */}
+                {/* 2. Barra Flutuante de Avaliação (Sem caixas ou blocos quadrados) */}
                 {!isReadOnly && onUpdateRating && (
-                  <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Star className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0" />
-                        <span className="text-xs font-bold text-white">Sua Nota Pessoal</span>
-                        {anime.rating !== null && anime.rating !== undefined ? (
-                          <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-black">
-                            {anime.rating} / 10
-                          </span>
-                        ) : (
-                          <span className="text-[11px] text-slate-500 italic">Sem nota</span>
-                        )}
-                      </div>
-
-                      {anime.rating !== null && anime.rating !== undefined && (
-                        <button
-                          type="button"
-                          onClick={() => onUpdateRating(anime, null)}
-                          className="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer transition-colors"
-                        >
-                          Remover nota
-                        </button>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-white/[0.08]">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0" />
+                      <span className="text-xs font-bold text-white">Sua Avaliação:</span>
+                      {anime.rating !== null && anime.rating !== undefined ? (
+                        <span className="text-xs font-black text-amber-300">
+                          {Number(anime.rating).toFixed(anime.rating % 1 === 0 ? 0 : 1)} / 10
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-zinc-500 italic">Deslize para avaliar</span>
                       )}
                     </div>
 
-                    {/* Slider Tátil com Marcadores de 1 a 10 */}
-                    <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center gap-3 w-full sm:w-64">
                       <input
                         type="range"
                         min="1"
                         max="10"
-                        step="1"
+                        step="0.5"
                         value={anime.rating || 1}
-                        onChange={(e) => onUpdateRating(anime, Number(e.target.value))}
-                        className="w-full accent-amber-400 cursor-pointer h-2 bg-white/10 rounded-lg transition-all"
+                        onChange={(e) => onUpdateRating(anime, parseFloat(e.target.value))}
+                        className="w-full accent-amber-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg transition-all"
                       />
-                      <div className="flex justify-between text-[10px] font-bold text-slate-500 px-0.5 select-none">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                          <button
-                            key={num}
-                            type="button"
-                            onClick={() => onUpdateRating(anime, num)}
-                            className={`cursor-pointer transition-colors hover:text-amber-300 ${
-                              anime.rating === num ? 'text-amber-400 font-black scale-125' : ''
-                            }`}
-                          >
-                            {num}
-                          </button>
-                        ))}
-                      </div>
+                      {anime.rating !== null && anime.rating !== undefined && (
+                        <button
+                          type="button"
+                          onClick={() => onUpdateRating(anime, null)}
+                          className="text-[10px] text-zinc-500 hover:text-rose-400 whitespace-nowrap cursor-pointer transition-colors"
+                        >
+                          Limpar
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
 
-                {/* 3. LINHA DO TEMPO CONECTADA DE TEMPORADAS & ARCOS */}
-                <div className="space-y-3 pt-1">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <Layers className="w-4 h-4 text-indigo-400" />
-                      <span>Linha do Tempo da Franquia ({totalSeasonsCount || 1})</span>
-                    </h4>
-                    {!isReadOnly && (
-                      <div className="flex items-center gap-2">
+                {/* 3. A GRANDE TRILHA CONTÍNUA DA FRANQUIA (ESTILO JORNADA/STREAMING, ZERO CAIXAS) */}
+                <div className="space-y-4">
+                  {/* Cabeçalho da Trilha com Filtros e Gerenciar */}
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-amber-400" />
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                        Linha do Tempo
+                      </h4>
+                      <span className="text-[11px] text-zinc-500 font-medium">
+                        • {watchedSeasonsCount}/{totalSeasonsCount || 1} assistidas
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {tvSeasons.length > 0 && extraSeasons.length > 0 && (
+                        <div className="flex items-center gap-1 text-[11px]">
+                          <button
+                            type="button"
+                            onClick={() => setSeasonsFilter('tv')}
+                            className={`px-2 py-0.5 rounded-md transition-colors cursor-pointer ${
+                              effectiveFilter === 'tv'
+                                ? 'bg-white/10 text-white font-bold'
+                                : 'text-zinc-500 hover:text-zinc-300'
+                            }`}
+                          >
+                            Séries ({tvSeasons.length})
+                          </button>
+                          <span className="text-zinc-600">/</span>
+                          <button
+                            type="button"
+                            onClick={() => setSeasonsFilter('extras')}
+                            className={`px-2 py-0.5 rounded-md transition-colors cursor-pointer ${
+                              effectiveFilter === 'extras'
+                                ? 'bg-white/10 text-white font-bold'
+                                : 'text-zinc-500 hover:text-zinc-300'
+                            }`}
+                          >
+                            Extras ({extraSeasons.length})
+                          </button>
+                        </div>
+                      )}
+
+                      {!isReadOnly && (
                         <button
                           type="button"
                           onClick={() => setIsManagingSeasons(!isManagingSeasons)}
-                          className={`text-xs px-2.5 py-1 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                          className={`text-[11px] px-2 py-0.5 rounded-md font-medium transition-colors cursor-pointer flex items-center gap-1 ${
                             isManagingSeasons
-                              ? 'bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-600/30'
-                              : 'bg-black text-indigo-400 hover:text-indigo-300 border-white/10 hover:border-indigo-500/30'
+                              ? 'bg-amber-500 text-black font-bold'
+                              : 'text-zinc-400 hover:text-white'
                           }`}
                         >
                           {isManagingSeasons ? (
                             <>
-                              <Check className="w-3.5 h-3.5" />
-                              <span>Pronto</span>
+                              <Check className="w-3 h-3" />
+                              <span>Concluir</span>
                             </>
                           ) : (
                             <>
-                              <Edit3 className="w-3.5 h-3.5" />
-                              <span>Gerenciar / Sincronizar</span>
+                              <Edit3 className="w-3 h-3" />
+                              <span>Gerenciar</span>
                             </>
                           )}
                         </button>
-                        {onEdit && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              onClose();
-                              onEdit(anime);
-                            }}
-                            className="text-[11px] text-slate-400 hover:text-slate-200 transition-colors cursor-pointer hidden sm:inline"
-                            title="Abrir editor completo com árvore de franquias"
-                          >
-                            (Editor Completo)
-                          </button>
-                        )}
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
 
-                  {/* Painel Completo de Gerenciar Temporadas */}
+                  {/* Painel Leve de Gerenciamento/Sincronização (quando ativado) */}
                   {isManagingSeasons && !isReadOnly && (
-                    <div className="p-3 sm:p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/30 space-y-3 animate-in fade-in">
-                      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-black/50 border border-white/10">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={handleRefreshOfficialTreeInline}
-                            disabled={isRefreshingTree}
-                            className="px-3 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                            title="Busca e atualiza a árvore completa da franquia"
-                          >
-                            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingTree ? 'animate-spin text-indigo-400' : ''}`} />
-                            <span>
-                              {isRefreshingTree
-                                ? 'Consultando Franquia...'
-                                : (anime.structureMode === 'arcs' || anime.seasons?.some((s) => s.type === 'arc' || s.name.toLowerCase().includes('arco')))
-                                ? 'Recarregar Árvore de Arcos'
-                                : 'Recarregar Árvore de Temporadas'}
-                            </span>
-                          </button>
-
-                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 font-medium">
-                            Estrutura: {(anime.structureMode === 'arcs' || anime.seasons?.some((s) => s.type === 'arc' || s.name.toLowerCase().includes('arco'))) ? 'Arcos da História' : 'Temporadas & Filmes'}
-                          </span>
-                        </div>
-
+                    <div className="p-3 rounded-xl bg-zinc-950/80 border border-white/10 space-y-2 animate-in fade-in">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={handleRefreshOfficialTreeInline}
+                          disabled={isRefreshingTree}
+                          className="px-3 py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-xs font-bold text-white transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingTree ? 'animate-spin text-amber-400' : ''}`} />
+                          <span>{isRefreshingTree ? 'Sincronizando...' : 'Recarregar Árvore Oficial'}</span>
+                        </button>
                         {refreshTreeFeedback && (
-                          <div
-                            className={`text-xs px-2.5 py-1 rounded-lg border font-medium ${
-                              refreshTreeFeedback.success
-                                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                                : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-                            }`}
-                          >
+                          <span className="text-xs text-amber-300 font-medium">
                             {refreshTreeFeedback.text}
-                          </div>
+                          </span>
                         )}
                       </div>
-
-                      <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/20 text-xs text-indigo-200/90 leading-relaxed flex items-start gap-2.5">
-                        <RefreshCw className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-semibold text-white">Sincronização 100% Automática</p>
-                          <p className="text-[11px] text-slate-300 mt-0.5">
-                            Novas temporadas e arcos são detectados e incluídos na sua ficha mantendo seus títulos customizados intactos.
-                          </p>
-                        </div>
-                      </div>
+                      <p className="text-[11px] text-zinc-500">
+                        Edite os nomes ou episódios diretamente em cada marco abaixo.
+                      </p>
                     </div>
                   )}
 
-                  {/* Linha do Tempo Visual Conectada */}
-                  {allSeasons.length === 0 ? (
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">
-                          {anime.currentSeasonName || 'Temporada 1'} ({anime.totalEpisodes ? `${anime.totalEpisodes} episódios` : 'em andamento'})
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
-                          Atual
-                        </span>
+                  {/* A Trilha Vertical (Zero Caixas, Apenas Fluxo) */}
+                  {filteredSeasons.length === 0 ? (
+                    <div className="relative pl-9 sm:pl-10 pt-2 pb-2">
+                      <div className="absolute left-3.5 sm:left-4 top-0 bottom-0 w-[2px] bg-amber-400" />
+                      <div className="absolute left-3.5 sm:left-4 -translate-x-1/2 top-2 w-6 h-6 rounded-full bg-amber-400 text-black flex items-center justify-center ring-4 ring-amber-400/20">
+                        <Play className="w-2.5 h-2.5 fill-black ml-0.5" />
                       </div>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Este anime ainda não possui temporadas adicionadas. Toque em "Gerenciar / Sincronizar" para consultar a franquia oficial.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {/* Filtro de Trilhas (TV vs Extras) e Resumo */}
-                      <div className="flex items-center justify-between gap-2 flex-wrap pb-1">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          {tvSeasons.length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => setSeasonsFilter('tv')}
-                              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                                effectiveFilter === 'tv'
-                                  ? 'bg-indigo-600 text-white shadow-xs'
-                                  : 'bg-white/[0.04] text-slate-400 hover:text-white border border-white/[0.06]'
-                              }`}
-                            >
-                              <Tv className="w-3 h-3 text-indigo-400" />
-                              <span>Séries TV ({tvSeasons.length})</span>
-                            </button>
-                          )}
-
-                          {extraSeasons.length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => setSeasonsFilter('extras')}
-                              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                                effectiveFilter === 'extras'
-                                  ? 'bg-indigo-600 text-white shadow-xs'
-                                  : 'bg-white/[0.04] text-slate-400 hover:text-white border border-white/[0.06]'
-                              }`}
-                            >
-                              <Film className="w-3 h-3 text-purple-400" />
-                              <span>Filmes & Extras ({extraSeasons.length})</span>
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>
-                            {watchedSeasonsCount} de {totalSeasonsCount} assistidas
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">
+                            Temporada Atual
                           </span>
                         </div>
+                        <h4 className="text-base font-extrabold text-white">
+                          {anime.currentSeasonName || 'Temporada 1'}
+                        </h4>
+                        {!isReadOnly && onIncrement && onDecrement && (
+                          <div className="flex items-center gap-2.5 pt-1">
+                            <button
+                              onClick={() => onDecrement(anime)}
+                              disabled={anime.currentEpisode <= 0}
+                              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 disabled:opacity-30 text-white flex items-center justify-center transition-all cursor-pointer"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="text-lg font-black text-white tabular-nums">
+                              Ep {anime.currentEpisode} {maxEp ? `/ ${maxEp}` : ''}
+                            </span>
+                            <button
+                              onClick={() => onIncrement(anime)}
+                              className="px-3.5 h-8 rounded-full bg-amber-400 hover:bg-amber-300 active:scale-95 text-black font-extrabold text-xs flex items-center gap-1 shadow-md shadow-amber-400/20 transition-all cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+1</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                  ) : (
+                    <div className="relative pl-9 sm:pl-10 space-y-7 pt-2 pb-4">
+                      {/* Linha vertical conectada contínua de ponta a ponta */}
+                      <div className="absolute left-3.5 sm:left-4 top-3 bottom-3 w-[2px] bg-gradient-to-b from-emerald-500/80 via-amber-400 to-white/10 pointer-events-none" />
 
-                      {/* Trilha Conectada Vertical */}
-                      <div className="relative pl-6 space-y-2.5 before:content-[''] before:absolute before:left-2.5 before:top-3.5 before:bottom-3.5 before:w-[2px] before:bg-gradient-to-b before:from-indigo-500 before:via-white/20 before:to-white/5">
-                        {filteredSeasons.map((sec, idx) => {
-                          const isActive = anime.currentSeasonName === sec.name;
-                          const isMovie = sec.type === 'movie' || /filme|movie/i.test(sec.name);
-                          const isOva = sec.type === 'ova' || /ova/i.test(sec.name);
-                          const isArc = sec.type === 'arc' || /arco/i.test(sec.name);
+                      {filteredSeasons.map((sec, idx) => {
+                        const isActive = anime.currentSeasonName === sec.name;
+                        const isMovie = sec.type === 'movie' || /filme|movie/i.test(sec.name);
+                        const isOva = sec.type === 'ova' || /ova/i.test(sec.name);
+                        const isArc = sec.type === 'arc' || /arco/i.test(sec.name);
 
-                          const currentEpNum = Number(anime.currentEpisode) || 0;
-                          const totalEpNum = sec.totalEpisodes || anime.totalEpisodes || 0;
-                          const progressPct = totalEpNum > 0 ? Math.min(100, Math.round((currentEpNum / totalEpNum) * 100)) : 0;
+                        const currentEpNum = Number(anime.currentEpisode) || 0;
+                        const totalEpNum = sec.totalEpisodes || anime.totalEpisodes || 0;
+                        const progressPct = totalEpNum > 0 ? Math.min(100, Math.round((currentEpNum / totalEpNum) * 100)) : 0;
 
-                          return (
-                            <div key={`timeline_season_${sec.id || sec.name || idx}_${idx}`} className="relative group">
-                              {/* Marcador do Nó da Linha do Tempo */}
-                              <div
-                                className={`absolute -left-6 top-3 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black transition-all z-10 ${
-                                  isActive
-                                    ? 'bg-indigo-600 text-white ring-4 ring-indigo-500/30 shadow-lg shadow-indigo-600/50 animate-pulse'
-                                    : sec.isWatched
-                                    ? 'bg-emerald-600 text-white ring-2 ring-emerald-500/30'
-                                    : 'bg-zinc-900 border border-white/20 text-slate-400'
-                                }`}
-                              >
-                                {isActive ? (
-                                  <Play className="w-2.5 h-2.5 fill-white ml-0.5" />
-                                ) : sec.isWatched ? (
-                                  <Check className="w-3 h-3 stroke-[3]" />
-                                ) : (
-                                  <span>{idx + 1}</span>
-                                )}
-                              </div>
+                        return (
+                          <div key={`track_${sec.id || sec.name || idx}_${idx}`} className="relative group">
+                            {/* NÓ DIRETO NA LINHA (Tocar nele alterna estado) */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (isManagingSeasons) return;
+                                if (!isActive && onSwitchSeason) {
+                                  onSwitchSeason(anime, sec);
+                                } else if (onToggleSeasonWatched) {
+                                  onToggleSeasonWatched(anime, sec.id);
+                                }
+                              }}
+                              title={
+                                isActive
+                                  ? 'Temporada atual'
+                                  : sec.isWatched
+                                  ? 'Concluída (toque para alternar)'
+                                  : 'Toque para mudar para esta temporada'
+                              }
+                              className={`absolute -left-9 sm:-left-10 top-1 -translate-x-1/2 flex items-center justify-center transition-all cursor-pointer z-10 ${
+                                isActive
+                                  ? 'w-7 h-7 rounded-full bg-amber-400 text-black shadow-lg shadow-amber-400/30 ring-4 ring-amber-400/20'
+                                  : sec.isWatched
+                                  ? 'w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-400 hover:scale-110'
+                                  : 'w-5 h-5 rounded-full bg-black border border-white/30 text-zinc-500 text-[10px] font-bold hover:border-amber-400 hover:text-white'
+                              }`}
+                            >
+                              {isActive ? (
+                                <Play className="w-3 h-3 fill-black ml-0.5" />
+                              ) : sec.isWatched ? (
+                                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                              ) : (
+                                <span>{idx + 1}</span>
+                              )}
+                            </button>
 
-                              {/* Cartão Conectado da Temporada */}
-                              <div
-                                className={`p-3 rounded-2xl border transition-all ${
-                                  isActive
-                                    ? 'bg-indigo-950/25 border-indigo-500/40 shadow-lg shadow-indigo-950/30'
-                                    : 'bg-[#0a0a0f] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.02]'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between gap-2.5 flex-wrap sm:flex-nowrap">
-                                  <div className="min-w-0 flex-1">
-                                    {isManagingSeasons ? (
-                                      <div className="space-y-1.5">
-                                        <input
-                                          type="text"
-                                          defaultValue={sec.name}
-                                          onBlur={(e) => handleUpdateSeasonNameInline(sec.id, e.target.value)}
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-                                          }}
-                                          title="Clique para editar o nome da temporada"
-                                          className="w-full bg-black/80 border border-white/20 focus:border-indigo-500 rounded-lg px-2.5 py-1 text-xs font-bold text-white outline-none"
-                                        />
-                                        <div className="flex items-center gap-2 pt-0.5">
-                                          <span className="text-[10px] text-slate-400">Total eps:</span>
-                                          <input
-                                            type="number"
-                                            min="1"
-                                            defaultValue={sec.totalEpisodes || ''}
-                                            placeholder="-"
-                                            onBlur={(e) => {
-                                              const val = e.target.value ? parseInt(e.target.value, 10) : null;
-                                              handleUpdateSeasonEpisodesInline(sec.id, val);
-                                            }}
-                                            className="w-16 bg-black/70 border border-white/15 focus:border-indigo-500 rounded-lg px-2 py-0.5 text-xs text-white text-center outline-none"
-                                          />
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                          <span
-                                            className={`px-1.5 py-0.5 rounded font-bold uppercase tracking-wider text-[8.5px] border ${
-                                              isMovie
-                                                ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                                                : isOva
-                                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                                                : isArc
-                                                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                                                : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
-                                            }`}
-                                          >
-                                            {isMovie ? 'Filme' : isOva ? 'OVA' : isArc ? 'Arco' : 'TV'}
-                                          </span>
-
-                                          <h5 className="text-xs font-bold text-white break-words leading-tight">
-                                            {sec.name}
-                                          </h5>
-
-                                          <span className="text-[10.5px] text-slate-500 font-mono">
-                                            {sec.totalEpisodes ? `• ${sec.totalEpisodes} eps` : '• Em exibição'}
-                                          </span>
-                                        </div>
-
-                                        {sec.canonicalTitle &&
-                                          sec.canonicalTitle.toLowerCase().trim() !== sec.name.toLowerCase().trim() && (
-                                            <p
-                                              className="text-[9.5px] text-indigo-300/70 font-mono truncate mt-0.5"
-                                              title={`Título oficial na API: ${sec.canonicalTitle}`}
-                                            >
-                                              Canônico: {sec.canonicalTitle}
-                                            </p>
-                                          )}
-
-                                        {/* Barra de Progresso Rápido caso seja a temporada ativa */}
-                                        {isActive && (
-                                          <div className="mt-2 pt-1.5 border-t border-indigo-500/20 max-w-md">
-                                            <div className="flex items-center justify-between text-[9.5px] font-semibold text-indigo-200 mb-0.5">
-                                              <span>Progresso atual</span>
-                                              <span>
-                                                {currentEpNum} / {totalEpNum || '?'} eps ({progressPct}%)
-                                              </span>
-                                            </div>
-                                            <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden">
-                                              <div
-                                                className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full transition-all duration-300"
-                                                style={{ width: `${progressPct}%` }}
-                                              />
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    )}
-                                  </div>
-
-                                  {/* Ações da Linha */}
-                                  <div className="flex items-center gap-1.5 shrink-0">
-                                    {!isReadOnly && !isManagingSeasons && (
-                                      <>
-                                        {isActive ? (
-                                          <span className="px-2 py-0.5 rounded-lg bg-indigo-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm border border-indigo-400/40 shrink-0">
-                                            <Play className="w-2.5 h-2.5 fill-white" />
-                                            <span>Assistindo</span>
-                                          </span>
-                                        ) : (
-                                          onSwitchSeason && (
-                                            <button
-                                              type="button"
-                                              onClick={() => onSwitchSeason(anime, sec)}
-                                              className="px-2 py-0.5 rounded-lg bg-white/[0.04] hover:bg-indigo-600/30 text-indigo-300 hover:text-white border border-white/[0.08] hover:border-indigo-500/40 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
-                                            >
-                                              <Play className="w-2.5 h-2.5 text-indigo-400" />
-                                              <span>Mudar</span>
-                                            </button>
-                                          )
-                                        )}
-
-                                        {onToggleSeasonWatched && (
-                                          <button
-                                            type="button"
-                                            onClick={() => onToggleSeasonWatched(anime, sec.id)}
-                                            title={sec.isWatched ? 'Já assistida (clique para desmarcar)' : 'Marcar como assistida'}
-                                            className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer border shrink-0 ${
-                                              sec.isWatched
-                                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-xs'
-                                                : 'bg-white/[0.03] text-slate-400 border-white/[0.08] hover:text-white hover:border-white/20'
-                                            }`}
-                                          >
-                                            {sec.isWatched ? (
-                                              <>
-                                                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                                                <span>Assistida</span>
-                                              </>
-                                            ) : (
-                                              <>
-                                                <Circle className="w-3 h-3 opacity-50" />
-                                                <span>Pendente</span>
-                                              </>
-                                            )}
-                                          </button>
-                                        )}
-                                      </>
-                                    )}
-
-                                    {isManagingSeasons && !isReadOnly && (
-                                      <button
-                                        type="button"
-                                        onClick={() => handleDeleteSeasonInline(sec.id)}
-                                        disabled={anime.seasons && anime.seasons.length <= 1}
-                                        title={
-                                          anime.seasons && anime.seasons.length <= 1
-                                            ? 'Não é possível excluir a única temporada'
-                                            : 'Remover esta temporada'
-                                        }
-                                        className="p-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                                      >
-                                        <Trash2 className="w-3 h-3" />
-                                      </button>
-                                    )}
+                            {/* CONTEÚDO DO MARCO (FLUTUANDO DIRETO NO PRETO, SEM NENHUMA CAIXA) */}
+                            <div className="min-w-0 space-y-1.5 pb-2 border-b border-white/[0.04]">
+                              {isManagingSeasons ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="text"
+                                      defaultValue={sec.name}
+                                      onBlur={(e) => handleUpdateSeasonNameInline(sec.id, e.target.value)}
+                                      className="flex-1 bg-black border-b border-white/20 focus:border-amber-400 text-xs font-bold text-white py-1 outline-none"
+                                    />
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      defaultValue={sec.totalEpisodes || ''}
+                                      placeholder="Total eps"
+                                      onBlur={(e) => {
+                                        const val = e.target.value ? parseInt(e.target.value, 10) : null;
+                                        handleUpdateSeasonEpisodesInline(sec.id, val);
+                                      }}
+                                      className="w-16 bg-black border-b border-white/20 focus:border-amber-400 text-xs text-white py-1 text-center outline-none"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteSeasonInline(sec.id)}
+                                      disabled={anime.seasons && anime.seasons.length <= 1}
+                                      className="text-rose-400 hover:text-rose-300 p-1 disabled:opacity-20 cursor-pointer"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
                                   </div>
                                 </div>
-                              </div>
+                              ) : (
+                                <>
+                                  {/* Cabeçalho do Marco */}
+                                  <div className="flex items-start justify-between gap-3">
+                                    <div
+                                      onClick={() => !isActive && onSwitchSeason && onSwitchSeason(anime, sec)}
+                                      className={`min-w-0 flex-1 ${!isActive ? 'cursor-pointer' : ''}`}
+                                    >
+                                      <div className="flex items-center gap-1.5 flex-wrap">
+                                        <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">
+                                          {isMovie ? 'Filme' : isOva ? 'OVA' : isArc ? 'Arco' : 'TV'}
+                                        </span>
+
+                                        <h5
+                                          className={`text-sm sm:text-base font-extrabold leading-tight transition-colors ${
+                                            isActive
+                                              ? 'text-white'
+                                              : sec.isWatched
+                                              ? 'text-zinc-200 hover:text-white'
+                                              : 'text-zinc-400 hover:text-white'
+                                          }`}
+                                        >
+                                          {sec.name}
+                                        </h5>
+
+                                        {isActive && (
+                                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 font-bold ml-1">
+                                            Atual
+                                          </span>
+                                        )}
+                                      </div>
+
+                                      <p className="text-[11px] text-zinc-400 mt-0.5">
+                                        {isActive ? (
+                                          <span className="text-amber-300/90 font-semibold">
+                                            Episódio {anime.currentEpisode} de {sec.totalEpisodes || '?'}
+                                          </span>
+                                        ) : sec.isWatched ? (
+                                          <span className="text-emerald-400/80 font-medium">
+                                            {sec.totalEpisodes ? `${sec.totalEpisodes} eps • ` : ''}Temporada concluída
+                                          </span>
+                                        ) : (
+                                          <span className="text-zinc-500">
+                                            {sec.totalEpisodes ? `${sec.totalEpisodes} eps • ` : 'Em exibição • '}Não iniciada
+                                          </span>
+                                        )}
+                                      </p>
+                                    </div>
+
+                                    {/* Ação Direta no Fluxo (Sem poluição de botões múltiplos) */}
+                                    <div className="shrink-0 flex items-center gap-2 pt-0.5">
+                                      {!isActive ? (
+                                        onSwitchSeason && (
+                                          <button
+                                            type="button"
+                                            onClick={() => onSwitchSeason(anime, sec)}
+                                            className="text-xs font-bold text-zinc-400 hover:text-amber-300 transition-colors flex items-center gap-1 cursor-pointer"
+                                          >
+                                            <Play className="w-3 h-3" />
+                                            <span>Assistir</span>
+                                          </button>
+                                        )
+                                      ) : null}
+
+                                      {onToggleSeasonWatched && (
+                                        <button
+                                          type="button"
+                                          onClick={() => onToggleSeasonWatched(anime, sec.id)}
+                                          title={sec.isWatched ? 'Marcar como pendente' : 'Marcar como concluída'}
+                                          className={`p-1 rounded-md transition-colors cursor-pointer ${
+                                            sec.isWatched ? 'text-emerald-400 hover:text-emerald-300' : 'text-zinc-600 hover:text-zinc-300'
+                                          }`}
+                                        >
+                                          <CheckCircle2 className="w-4 h-4" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* SE FOR A TEMPORADA ATIVA: CONTROLE DE EPISÓDIOS INTEGRADO DIRETAMENTE NA LINHA */}
+                                  {isActive && !isReadOnly && (
+                                    <div className="pt-2 space-y-2">
+                                      <div className="flex items-center gap-2.5">
+                                        {onDecrement && (
+                                          <button
+                                            onClick={() => onDecrement(anime)}
+                                            disabled={anime.currentEpisode <= 0}
+                                            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 disabled:opacity-20 text-white flex items-center justify-center transition-all cursor-pointer"
+                                            title="Voltar episódio"
+                                          >
+                                            <Minus className="w-3.5 h-3.5" />
+                                          </button>
+                                        )}
+
+                                        <div className="flex items-baseline gap-1">
+                                          <span className="text-xl sm:text-2xl font-black text-white tabular-nums">
+                                            Ep {anime.currentEpisode}
+                                          </span>
+                                          {maxEp ? (
+                                            <span className="text-xs text-zinc-400">/ {maxEp}</span>
+                                          ) : null}
+                                        </div>
+
+                                        {onIncrement && (
+                                          <button
+                                            onClick={() => onIncrement(anime)}
+                                            className="h-7 px-3 rounded-full bg-amber-400 hover:bg-amber-300 active:scale-95 text-black font-extrabold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer"
+                                            title="Avançar episódio"
+                                          >
+                                            <Plus className="w-3.5 h-3.5" />
+                                            <span>+1</span>
+                                          </button>
+                                        )}
+
+                                        {!isEditingDirectEp ? (
+                                          <button
+                                            onClick={() => {
+                                              setDirectEpInput(String(anime.currentEpisode));
+                                              setIsEditingDirectEp(true);
+                                            }}
+                                            className="text-[11px] text-zinc-500 hover:text-white underline underline-offset-2 ml-1 cursor-pointer font-medium"
+                                          >
+                                            Digitar
+                                          </button>
+                                        ) : (
+                                          <div className="flex items-center gap-1 ml-1">
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              value={directEpInput}
+                                              onChange={(e) => setDirectEpInput(e.target.value)}
+                                              className="w-14 bg-black border border-amber-400 rounded-md px-1.5 py-0.5 text-xs text-white text-center focus:outline-none"
+                                              autoFocus
+                                            />
+                                            <button
+                                              onClick={handleSaveDirectEp}
+                                              className="p-1 bg-amber-400 text-black rounded text-xs cursor-pointer font-bold"
+                                            >
+                                              <Check className="w-3 h-3 stroke-[3]" />
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      {/* Barra de Progresso Fina Diretamente no Fluxo */}
+                                      <div className="w-full max-w-sm space-y-1">
+                                        <div className="w-full h-1 rounded-full bg-zinc-800 overflow-hidden">
+                                          <div
+                                            className="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-300"
+                                            style={{ width: `${progressPct}%` }}
+                                          />
+                                        </div>
+                                        <div className="flex items-center justify-between text-[10px] text-zinc-500 font-medium">
+                                          <span>{progressPct}% concluído</span>
+                                          {totalEpNum > 0 && (
+                                            <span>{Math.max(0, totalEpNum - currentEpNum)} eps restantes</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
+                              )}
                             </div>
-                          );
-                        })}
-                      </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -1673,8 +1583,8 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
               {!isReadOnly && (
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-amber-400" />
                       <span>Onde Parei / Anotação</span>
                     </h4>
                     {!isEditingNotes && (
@@ -1684,7 +1594,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                           setNotesDraft(anime.notes || '');
                           setIsEditingNotes(true);
                         }}
-                        className="text-xs text-indigo-400 hover:text-indigo-300 cursor-pointer font-medium"
+                        className="text-xs text-amber-400 hover:text-amber-300 cursor-pointer font-medium"
                       >
                         {anime.notes ? 'Editar nota' : '+ Adicionar nota'}
                       </button>
@@ -1698,7 +1608,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                         value={notesDraft}
                         onChange={(e) => setNotesDraft(e.target.value)}
                         placeholder="Ex: Minuto 14:35, parou no início da batalha..."
-                        className="w-full bg-black border border-indigo-500 rounded-2xl p-3 text-xs sm:text-sm text-white placeholder:text-slate-600 focus:outline-none"
+                        className="w-full bg-black border border-amber-500/50 focus:border-amber-400 rounded-2xl p-3 text-xs sm:text-sm text-white placeholder:text-zinc-600 focus:outline-none"
                         autoFocus
                       />
                       <div className="flex items-center justify-end gap-2">
@@ -1707,13 +1617,13 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                             setNotesDraft(anime.notes || '');
                             setIsEditingNotes(false);
                           }}
-                          className="px-3 py-1.5 rounded-xl text-xs text-slate-400 hover:text-white bg-black border border-white/10 cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl text-xs text-zinc-400 hover:text-white bg-black border border-white/10 cursor-pointer"
                         >
                           Cancelar
                         </button>
                         <button
                           onClick={handleSaveNotes}
-                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer shadow-sm border border-indigo-400/40"
+                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold cursor-pointer shadow-md shadow-amber-500/20"
                         >
                           <Save className="w-3.5 h-3.5" />
                           <span>Salvar Nota</span>
@@ -1721,11 +1631,11 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-black border border-white/10 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed min-h-[48px]">
+                    <div className="bg-black border border-white/10 rounded-2xl p-3.5 text-xs sm:text-sm text-zinc-200 leading-relaxed min-h-[48px]">
                       {anime.notes ? (
                         <span>{anime.notes}</span>
                       ) : (
-                        <span className="text-slate-500 italic text-xs">
+                        <span className="text-zinc-500 italic text-xs">
                           Nenhuma anotação. Clique em "+ Adicionar nota" para registrar o minuto exato ou observação.
                         </span>
                       )}
@@ -1738,15 +1648,15 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
               {anime.synopsis ? (
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-amber-400" />
                       <span>Sinopse / História</span>
                     </h4>
                     <button
                       type="button"
                       id="btn-toggle-synopsis"
                       onClick={() => setIsSynopsisExpanded(!isSynopsisExpanded)}
-                      className="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer flex items-center gap-1 transition-colors bg-black border border-white/10 px-2.5 py-1 rounded-xl hover:border-white/20"
+                      className="text-[11px] text-amber-400 hover:text-amber-300 font-semibold cursor-pointer flex items-center gap-1 transition-colors bg-black border border-white/10 px-2.5 py-1 rounded-xl hover:border-white/20"
                     >
                       <span>{isSynopsisExpanded ? 'Minimizar' : 'Maximizar'}</span>
                       {isSynopsisExpanded ? (
@@ -1758,7 +1668,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                   </div>
                   <div
                     onClick={() => !isSynopsisExpanded && setIsSynopsisExpanded(true)}
-                    className={`text-xs sm:text-sm text-slate-300 leading-relaxed bg-black p-3.5 sm:p-4 rounded-2xl border border-white/10 relative transition-all ${
+                    className={`text-xs sm:text-sm text-zinc-300 leading-relaxed bg-black p-3.5 sm:p-4 rounded-2xl border border-white/10 relative transition-all ${
                       !isSynopsisExpanded ? 'cursor-pointer hover:border-white/20' : ''
                     }`}
                   >
@@ -1766,7 +1676,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                       {anime.synopsis}
                     </p>
                     {!isSynopsisExpanded && (
-                      <div className="mt-1 flex items-center gap-1 text-[11px] text-indigo-400 font-semibold">
+                      <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-400 font-semibold">
                         <span>Toque para ver a sinopse completa ▾</span>
                       </div>
                     )}
@@ -1777,12 +1687,12 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
               {/* Gêneros & Temas */}
               {anime.genres && anime.genres.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-xs font-bold text-slate-400 block">Gêneros e Temas:</span>
+                  <span className="text-xs font-bold text-zinc-400 block">Gêneros e Temas:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {anime.genres.map((g) => (
                       <span
                         key={g}
-                        className="text-xs bg-black text-indigo-300 border border-white/10 px-2.5 py-1 rounded-xl font-medium"
+                        className="text-xs bg-zinc-900 text-zinc-300 border border-white/10 px-2.5 py-1 rounded-xl font-medium"
                       >
                         {g}
                       </span>
@@ -1797,13 +1707,13 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowHistory(!showHistory)}
-                    className="flex items-center justify-between w-full text-xs font-semibold text-slate-400 hover:text-indigo-300 transition-colors cursor-pointer"
+                    className="flex items-center justify-between w-full text-xs font-semibold text-zinc-400 hover:text-amber-300 transition-colors cursor-pointer"
                   >
                     <span className="flex items-center gap-1.5">
-                      <History className="w-3.5 h-3.5 text-indigo-400" />
+                      <History className="w-3.5 h-3.5 text-amber-400" />
                       <span>Histórico recente (últimos {Math.min(10, anime.history.length)} episódios)</span>
                     </span>
-                    <span className="text-[11px] text-indigo-400">{showHistory ? 'Ocultar' : 'Exibir'}</span>
+                    <span className="text-[11px] text-amber-400">{showHistory ? 'Ocultar' : 'Exibir'}</span>
                   </button>
 
                   {showHistory && (
@@ -1811,12 +1721,12 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                       {anime.history.slice(0, 10).map((h) => (
                         <div
                           key={h.id}
-                          className="text-[11px] bg-black px-3 py-1.5 rounded-xl border border-white/10 flex items-center justify-between text-slate-300"
+                          className="text-[11px] bg-zinc-950 px-3 py-1.5 rounded-xl border border-white/10 flex items-center justify-between text-zinc-300"
                         >
-                          <span className="font-bold text-indigo-300">
+                          <span className="font-bold text-zinc-200">
                             {h.seasonName || 'Ep'} • Episódio {h.episode}
                           </span>
-                          <span className="text-slate-500 text-[10px]">
+                          <span className="text-zinc-500 text-[10px]">
                             {new Date(h.timestamp).toLocaleDateString('pt-BR', {
                               day: '2-digit',
                               month: '2-digit',
@@ -2209,9 +2119,9 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
         </div>
 
         {/* ============================================================
-            MODAL FOOTER (ULTRA-SLIM)
+            MODAL FOOTER (ULTRA-SLIM 20% REDUZIDO)
            ============================================================ */}
-        <div className="px-3 sm:px-6 py-2 bg-black border-t border-white/10 flex items-center justify-between shrink-0">
+        <div className="px-3 sm:px-5 py-1.5 bg-black border-t border-white/10 flex items-center justify-between shrink-0">
           {!isReadOnly && onDelete ? (
             <button
               type="button"
@@ -2220,7 +2130,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                 onClose();
                 onDelete(anime);
               }}
-              className="flex items-center gap-1.5 text-xs text-rose-400 hover:text-rose-300 bg-black border border-rose-500/30 hover:border-rose-500/60 px-3 py-1.5 rounded-xl transition-all cursor-pointer font-bold active:scale-95"
+              className="flex items-center gap-1.5 text-[11px] text-rose-400 hover:text-rose-300 bg-black border border-rose-500/30 hover:border-rose-500/60 px-2.5 py-1 rounded-lg transition-all cursor-pointer font-bold active:scale-95"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Excluir Anime</span>
@@ -2247,20 +2157,20 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
                 });
                 onClose();
               }}
-              className="flex items-center gap-1.5 text-xs text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-1.5 rounded-xl font-bold transition-all shadow-md cursor-pointer border border-indigo-400/40"
+              className="flex items-center gap-1.5 text-[11px] text-black bg-amber-500 hover:bg-amber-400 px-3 py-1 rounded-lg font-bold transition-all shadow-md cursor-pointer border border-amber-400/40"
             >
-              <BookmarkPlus className="w-4 h-4" />
+              <BookmarkPlus className="w-3.5 h-3.5" />
               <span>Adicionar à Lista</span>
             </button>
           ) : (
-            <div className="text-xs text-slate-500 flex items-center gap-1">
+            <div className="text-[11px] text-zinc-500 flex items-center gap-1">
               <span>WAnime List</span>
             </div>
           )}
 
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl bg-black border border-white/10 hover:border-white/25 text-white text-xs font-bold transition-colors cursor-pointer"
+            className="px-3.5 py-1 rounded-lg bg-black border border-white/10 hover:border-white/25 text-white text-[11px] font-bold transition-colors cursor-pointer"
           >
             Fechar
           </button>
