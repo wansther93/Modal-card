@@ -256,10 +256,25 @@ export const FranchiseTreeSelector: React.FC<FranchiseTreeSelectorProps> = ({
       if (fallback) itemsToApply = [fallback];
     }
 
-    // Identifica itens não inclusos para persistência limpa
-    const newExcluded = franchiseItems
+    // Identifica itens não inclusos para persistência limpa (IDs, títulos e referências para nunca reaparecerem se descartados)
+    const excludedEntities: (string | number)[] = [];
+    franchiseItems
       .filter((it) => !itemsToApply.some((app) => String(app.id) === String(it.id)))
-      .map((it) => it.id);
+      .forEach((it) => {
+        if (it.id) {
+          excludedEntities.push(it.id);
+          excludedEntities.push(String(it.id));
+        }
+        if ((it as any).aniListId) {
+          excludedEntities.push((it as any).aniListId);
+          excludedEntities.push(String((it as any).aniListId));
+        }
+        if (it.title) excludedEntities.push(it.title);
+        if (it.englishTitle) excludedEntities.push(it.englishTitle);
+        if (it.japaneseTitle) excludedEntities.push(it.japaneseTitle);
+      });
+
+    const newExcluded = Array.from(new Set([...excludedItemIds, ...excludedEntities]));
     setExcludedItemIds(newExcluded);
     if (onExcludedItemsChange) onExcludedItemsChange(newExcluded);
 

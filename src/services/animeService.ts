@@ -183,6 +183,7 @@ export const getPublicUserAnimes = async (userId: string): Promise<Anime[]> => {
         mal_id: data.mal_id !== undefined && data.mal_id !== null ? Number(data.mal_id) : null,
         franchiseIds: Array.isArray(data.franchiseIds) ? data.franchiseIds : [],
         franchiseTitle: data.franchiseTitle || null,
+        excludedFranchiseItems: Array.isArray(data.excludedFranchiseItems) ? data.excludedFranchiseItems : [],
         latestAiredEpisode: data.latestAiredEpisode !== undefined && data.latestAiredEpisode !== null ? Number(data.latestAiredEpisode) : null,
         airingStatus: data.airingStatus || null,
         trailerUrl: data.trailerUrl || null,
@@ -258,6 +259,7 @@ export const subscribeToUserAnimes = (
           mal_id: data.mal_id !== undefined && data.mal_id !== null ? Number(data.mal_id) : null,
           franchiseIds: Array.isArray(data.franchiseIds) ? data.franchiseIds : [],
           franchiseTitle: data.franchiseTitle || null,
+          excludedFranchiseItems: Array.isArray(data.excludedFranchiseItems) ? data.excludedFranchiseItems : [],
           latestAiredEpisode: data.latestAiredEpisode !== undefined && data.latestAiredEpisode !== null ? Number(data.latestAiredEpisode) : null,
           airingStatus: data.airingStatus || null,
           studio: data.studio || null,
@@ -336,6 +338,7 @@ export const addAnime = async (userId: string, formData: AnimeFormData): Promise
     mal_id: formData.mal_id !== undefined && formData.mal_id !== null ? Number(formData.mal_id) : null,
     franchiseIds: Array.isArray(formData.franchiseIds) ? formData.franchiseIds : [],
     franchiseTitle: (formData.franchiseTitle || '').trim() || null,
+    excludedFranchiseItems: Array.isArray(formData.excludedFranchiseItems) ? formData.excludedFranchiseItems : [],
     latestAiredEpisode: formData.latestAiredEpisode !== undefined && formData.latestAiredEpisode !== null ? Number(formData.latestAiredEpisode) : null,
     airingStatus: (formData.airingStatus || '').trim() || null,
     history: initialHistory,
@@ -404,6 +407,11 @@ export const updateAnime = async (
   if (updatedData.mal_id !== undefined) updatePayload.mal_id = updatedData.mal_id !== null ? Number(updatedData.mal_id) : null;
   if (updatedData.franchiseIds !== undefined) updatePayload.franchiseIds = Array.isArray(updatedData.franchiseIds) ? updatedData.franchiseIds : [];
   if (updatedData.franchiseTitle !== undefined) updatePayload.franchiseTitle = (updatedData.franchiseTitle || '').trim() || null;
+  if (updatedData.excludedFranchiseItems !== undefined) {
+    updatePayload.excludedFranchiseItems = Array.isArray(updatedData.excludedFranchiseItems)
+      ? updatedData.excludedFranchiseItems
+      : [];
+  }
   if (updatedData.latestAiredEpisode !== undefined) updatePayload.latestAiredEpisode = updatedData.latestAiredEpisode !== null ? Number(updatedData.latestAiredEpisode) : null;
   if (updatedData.airingStatus !== undefined) updatePayload.airingStatus = (updatedData.airingStatus || '').trim() || null;
   if (updatedData.history !== undefined) {

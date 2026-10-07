@@ -20,9 +20,14 @@ export interface OfficialCoverItem {
   source: 'AniList HD' | 'MyAnimeList HD';
 }
 
+const coversCache = new Map<string, OfficialCoverItem[]>();
+
 /**
  * Busca capas oficiais em altíssima resolução de todas as mídias da franquia
  * (temporadas, filmes, OVAs, especiais) através das APIs AniList e Jikan.
+ * 
+ * Regra de Ouro: AniList é o motor primário ultrarrápido (retorna em 300-500ms).
+ * O Jikan roda apenas como complemento/fallback e com timeout estrito de 2s para NUNCA travar a tela.
  */
 export async function searchOfficialHighResCovers(
   query: string
@@ -32,11 +37,19 @@ export async function searchOfficialHighResCovers(
     return [];
   }
 
+  const cacheKey = cleanQuery.toLowerCase();
+  if (coversCache.has(cacheKey)) {
+    return coversCache.get(cacheKey)!;
+  }
+
   const coversMap = new Map<string, OfficialCoverItem>();
 
-  // 1. Busca via AniList GraphQL (extraLarge - máxima resolução)
+  // 1. Busca Primária via AniList GraphQL (extraLarge - máxima resolução, 1000px+)
   const anilistPromise = (async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
       const graphqlQuery = `
         query ($search: String) {
           Page(page: 1, perPage: 25) {
@@ -71,7 +84,8 @@ export async function searchOfficialHighResCovers(
           query: graphqlQuery,
           variables: { search: cleanQuery },
         }),
-      });
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timeoutId));
 
       if (res.ok) {
         const json = await res.json();
@@ -98,11 +112,14 @@ export async function searchOfficialHighResCovers(
     }
   })();
 
-  // 2. Busca via Jikan (MyAnimeList WebP Large)
+  // 2. Busca Complementar via Jikan (MyAnimeList WebP Large) com timeout estrito de 2s
   const jikanPromise = (async () => {
     try {
-      const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(cleanQuery)}&limit=25&sfw=true`;
-      const res = await fetch(url);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+      const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(cleanQuery)}&limit=15&sfw=true`;
+      const res = await fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timeoutId));
       if (res.ok) {
         const json = await res.json();
         const list = json?.data || [];
@@ -125,12 +142,27 @@ export async function searchOfficialHighResCovers(
           }
         }
       }
-    } catch (err) {
-      console.warn('Erro ao buscar capas HD no Jikan:', err);
+    } catch {
+      // Jikan falhou ou expirou timeout - ignorado com segurança pois AniList é o motor primário
     }
   })();
 
-  await Promise.allSettled([anilistPromise, jikanPromise]);
+  // Se AniList responder rápido com resultados, não espera Jikan travar
+  await anilistPromise;
+  if (coversMap.size === 0) {
+    // Se AniList não retornou nada, aguarda Jikan com o timeout de 2s
+    await jikanPromise;
+  } else {
+    // Se AniList já encontrou capas, aguarda Jikan no máximo 600ms a mais ou prossegue
+    await Promise.race([
+      jikanPromise,
+      new Promise((resolve) => setTimeout(resolve, 600)),
+    ]);
+  }
 
-  return Array.from(coversMap.values());
+  const result = Array.from(coversMap.values());
+  if (result.length > 0) {
+    coversCache.set(cacheKey, result);
+  }
+  return result;
 }

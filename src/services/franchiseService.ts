@@ -60,8 +60,11 @@ export function getPredefinedArcs(_animeTitle: string): AnimeArcPreset[] | null 
   return null;
 }
 
-// Formatos estritamente audiovisuais permitidos
-const ALLOWED_AUDIOVISUAL_FORMATS = new Set(['TV', 'TV_SHORT', 'MOVIE', 'OVA', 'ONA', 'SPECIAL']);
+// Formatos estritamente audiovisuais permitidos (exclui shorts, mangás e mídias estáticas)
+const ALLOWED_AUDIOVISUAL_FORMATS = new Set(['TV', 'MOVIE', 'OVA', 'ONA', 'SPECIAL']);
+
+// Cache em memória para resolução instantânea (0ms) da árvore de franquia
+export const franchiseTreeMemoryCache = new Map<string, any>();
 
 // Tipos de relações válidas
 const VALID_RELATION_TYPES = new Set(['SEQUEL', 'PREQUEL', 'PARENT_STORY', 'SIDE_STORY', 'SPIN_OFF', 'ALTERNATIVE_SETTING', 'ALTERNATIVE_VERSION', 'SUMMARY']);
@@ -161,6 +164,11 @@ export async function fetchAnimeFranchiseTree(
   activeAiringDay?: string | null;
   candidateFranchises?: FranchiseCandidate[];
 }> {
+  const cacheKey = (exactTitle || String(searchQueryOrMalId)).toLowerCase().trim();
+  if (franchiseTreeMemoryCache.has(cacheKey)) {
+    return franchiseTreeMemoryCache.get(cacheKey);
+  }
+
   let resolvedMalId: number | null = typeof searchQueryOrMalId === 'number' || /^\d+$/.test(String(searchQueryOrMalId))
     ? Number(searchQueryOrMalId)
     : null;
@@ -390,6 +398,12 @@ export async function fetchAnimeFranchiseTree(
         const english = node.title?.english || '';
         const bestTitle = romaji || english || node.title?.native || 'Obra';
 
+        // Filtro contra paródias, esquetes e curtas paralelos não-canônicos
+        const titleCheck = `${bestTitle} ${english} ${node.title?.native || ''}`.toLowerCase();
+        if (/(?:mugiwara\s*theater|mugiwara\s*gekijou|parody|paródia|chibi|yonkoma|omake|sd\s*chara|fan\s*letter|special\s*program)/i.test(titleCheck)) {
+          return;
+        }
+
         // 2. Filtro de relevância de franquia para itens vindos de busca textual livre
         if (!isDirectRelation && rootKeywords.length > 0 && !isRelevantFranchiseNode(`${bestTitle} ${english}`, rootKeywords, rootTitle)) {
           return;
@@ -472,9 +486,9 @@ export async function fetchAnimeFranchiseTree(
 
       // 3. BUSCA BIDIMENSIONAL COMPLETA (BFS):
       // Percorre prequels (para trás) e sequels (para frente) em profundidade.
-      // Se um anime tem 10 ou 19 temporadas, expande recursivamente todos os elos da cadeia.
+      // 1 rodada rápida é suficiente para expandir conexões indiretas sem sobrecarregar a API com 4 loops seguidos.
       let expansionRounds = 0;
-      const MAX_EXPANSION_ROUNDS = 4; // 4 rodadas cobrem cadeias de mais de 20 temporadas conectadas
+      const MAX_EXPANSION_ROUNDS = 1;
       while (pendingAniListIds.size > 0 && expansionRounds < MAX_EXPANSION_ROUNDS) {
         expansionRounds++;
         const currentBatch = Array.from(pendingAniListIds).slice(0, 45);
@@ -546,7 +560,7 @@ export async function fetchAnimeFranchiseTree(
           `;
 
           const bController = new AbortController();
-          const bTimeout = setTimeout(() => bController.abort(), 6000);
+          const bTimeout = setTimeout(() => bController.abort(), 3500);
           const bRes = await fetch('https://graphql.anilist.co', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -767,7 +781,7 @@ export async function fetchAnimeFranchiseTree(
         // expõe os candidatos para desambiguação e seleciona a franquia primária por padrão.
         if (candidateFranchises.length > 1) {
           const primaryCluster = candidateFranchises[0];
-          return {
+          const result = {
             rootTitle: primaryCluster.title || rootTitle || rawSearch,
             franchiseIds: primaryCluster.franchiseIds,
             items: primaryCluster.items,
@@ -775,11 +789,13 @@ export async function fetchAnimeFranchiseTree(
             activeAiringDay: detectedAiringDay || null,
             candidateFranchises: candidateFranchises.slice(0, 8),
           };
+          franchiseTreeMemoryCache.set(cacheKey, result);
+          return result;
         }
 
         // Caso padrão (obra bem estabelecida com 1 única franquia conectada): não gera candidatos extras
         const primaryItems = formatClusterItems(collectedList, rootTitle || rawSearch);
-        return {
+        const result = {
           rootTitle: rootTitle || rawSearch,
           franchiseIds: Array.from(idsSet),
           items: primaryItems,
@@ -787,6 +803,8 @@ export async function fetchAnimeFranchiseTree(
           activeAiringDay: detectedAiringDay || null,
           candidateFranchises: undefined,
         };
+        franchiseTreeMemoryCache.set(cacheKey, result);
+        return result;
       }
     }
   } catch (err) {
@@ -804,21 +822,24 @@ export async function fetchAnimeFranchiseTree(
       order: idx + 1,
     }));
 
-    return {
+    const result = {
       rootTitle: rootTitle || exactTitle || 'Franquia',
       franchiseIds: [typeof searchQueryOrMalId === 'number' ? searchQueryOrMalId : 1],
       items: arcItems,
       predefinedArcs: arcs,
       activeAiringDay: null,
     };
+    franchiseTreeMemoryCache.set(cacheKey, result);
+    return result;
   }
 
-  return {
+  const fallbackResult = {
     rootTitle: rootTitle || exactTitle || 'Franquia',
     franchiseIds: typeof searchQueryOrMalId === 'number' ? [searchQueryOrMalId] : [],
     items: [],
     activeAiringDay: null,
   };
+  return fallbackResult;
 }
 
 /**

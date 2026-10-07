@@ -403,17 +403,25 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
       const seenItemIds = new Set<string>();
 
       const excludedNorm = (anime.excludedFranchiseItems || []).map((x) => String(x).toLowerCase().trim());
-      const isExcluded = (id: number | string | undefined, titles: (string | undefined | null)[]) => {
+      const isExcluded = (
+        id: number | string | undefined,
+        titles: (string | undefined | null)[],
+        secondaryId?: number | string | undefined
+      ) => {
         if (!excludedNorm.length) return false;
         if (id !== undefined && id !== null) {
           const strId = String(id).toLowerCase().trim();
           if (excludedNorm.includes(strId)) return true;
-          if (excludedNorm.some((ex) => ex.includes(strId) || strId.includes(ex))) return true;
+        }
+        if (secondaryId !== undefined && secondaryId !== null) {
+          const strSec = String(secondaryId).toLowerCase().trim();
+          if (excludedNorm.includes(strSec)) return true;
         }
         return titles.some((t) => {
           if (!t) return false;
           const normT = t.toLowerCase().trim();
           return excludedNorm.some((ex) => {
+            if (!ex) return false;
             if (ex === normT) return true;
             if (ex.length >= 4 && (normT.includes(ex) || ex.includes(normT))) return true;
             return false;
@@ -541,7 +549,8 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
           const startIdx = maxMatchedItemIdx >= 0 ? maxMatchedItemIdx + 1 : res.items.length;
           for (let i = startIdx; i < res.items.length; i++) {
             const futureItem = res.items[i];
-            if (isExcluded(futureItem.id, [futureItem.title, futureItem.englishTitle])) continue;
+            if (isExcluded(futureItem.id, [futureItem.title, futureItem.englishTitle, (futureItem as any).japaneseTitle], (futureItem as any).aniListId)) continue;
+            if (updatedSeasons.some((s) => doesItemMatchSeason(futureItem, s))) continue;
 
             // Não adiciona OVAs ou Specials como temporadas futuras automáticas
             if (futureItem.format === 'OVA' || futureItem.format === 'Special') continue;
@@ -642,6 +651,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
         structureMode: effectiveMode,
         ...(res.rootTitle ? { franchiseTitle: res.rootTitle } : {}),
         broadcastDay: res.activeAiringDay || anime.broadcastDay || null,
+        excludedFranchiseItems: anime.excludedFranchiseItems || [],
       };
 
       if (activeTotalEpisodes && anime.currentEpisode > activeTotalEpisodes) {
@@ -652,7 +662,7 @@ export const AnimeDetailModal: React.FC<AnimeDetailModalProps> = ({
       setRefreshTreeFeedback({
         text: isArcsMode
           ? `✓ Árvore de arcos da história sincronizada com sucesso! (${updatedSeasons.length} arcos)`
-          : `✓ Árvore oficial de temporadas e filmes sincronizada com sucesso! (${updatedSeasons.length} mídias)`,
+          : `✓ Árvore oficial sincronizada com sucesso! (${updatedSeasons.length} temporadas)`,
         success: true,
       });
     } catch (err) {

@@ -38,7 +38,7 @@ import { translateSynopsisToPT } from '../services/translationService';
 import { compressImageFile } from '../lib/imageUtils';
 import { FranchiseTreeSelector } from './FranchiseTreeSelector';
 import { FranchiseGuideModal } from './FranchiseGuideModal';
-import { getFranchiseRootTitle } from '../services/franchiseService';
+import { getFranchiseRootTitle, fetchAnimeFranchiseTree } from '../services/franchiseService';
 import { searchOfficialHighResCovers, type OfficialCoverItem } from '../services/officialCoverService';
 import { fetchOfficialAnimeTrailer } from '../services/animeSyncService';
 
@@ -204,6 +204,24 @@ export const AnimeModal: React.FC<AnimeModalProps> = ({
     setError(null);
   }, [initialData, isOpen]);
 
+  // Pré-carregamento Inteligente em Segundo Plano:
+  // Enquanto o usuário digita (O, N, E...), o timer zera a cada tecla (ZERO requisições às APIs).
+  // Quando o usuário termina de digitar (passou 700ms sem teclar e tem >= 3 letras),
+  // o sistema consulta silenciosamente a árvore de franquias e capas em background e guarda em memória.
+  // Ao clicar no botão, os dados já estão no cache e abrem em 0ms instantâneo!
+  useEffect(() => {
+    if (!isOpen) return;
+    const clean = title.trim();
+    if (clean.length < 3) return;
+
+    const timer = setTimeout(() => {
+      fetchAnimeFranchiseTree(clean).catch(() => {});
+      searchOfficialHighResCovers(clean).catch(() => {});
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [title, isOpen]);
+
   if (!isOpen) return null;
 
   // Handle local image file upload from phone gallery / PC
@@ -302,15 +320,18 @@ export const AnimeModal: React.FC<AnimeModalProps> = ({
 
         if (best.synopsis) {
           setSynopsis(best.synopsis);
+          // Tradução suave em segundo plano para nunca bloquear a tela
           setIsTranslatingSynopsis(true);
-          try {
-            const translated = await translateSynopsisToPT(best.synopsis);
-            if (translated) setSynopsis(translated);
-          } catch (tErr) {
-            console.warn('Erro ao traduzir sinopse:', tErr);
-          } finally {
-            setIsTranslatingSynopsis(false);
-          }
+          translateSynopsisToPT(best.synopsis)
+            .then((translated) => {
+              if (translated) setSynopsis(translated);
+            })
+            .catch((tErr) => {
+              console.warn('Erro ao traduzir sinopse:', tErr);
+            })
+            .finally(() => {
+              setIsTranslatingSynopsis(false);
+            });
         }
       }
     } catch (err) {

@@ -309,20 +309,24 @@ async function searchAniList(query: string): Promise<JikanAnimeResult[]> {
 }
 
 /**
- * 2. Provedor Secundário: Jikan (MyAnimeList API)
+ * 2. Provedor Secundário: Jikan (MyAnimeList API) com timeout de 2.5s para nunca travar requisições
  */
 async function searchJikan(query: string): Promise<JikanAnimeResult[]> {
-  const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query.trim())}&limit=6&sfw=true`;
-  const response = await fetch(url);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
 
-  if (!response.ok) {
-    throw new Error(`Jikan returned status ${response.status}`);
-  }
+    const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query.trim())}&limit=6&sfw=true`;
+    const response = await fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timeoutId));
 
-  const json = await response.json();
-  if (!json.data || !Array.isArray(json.data) || json.data.length === 0) return [];
+    if (!response.ok) {
+      throw new Error(`Jikan returned status ${response.status}`);
+    }
 
-  return json.data.map((item: any) => {
+    const json = await response.json();
+    if (!json.data || !Array.isArray(json.data) || json.data.length === 0) return [];
+
+    return json.data.map((item: any) => {
     const rawGenres: string[] = [
       ...(item.genres || []).map((g: any) => g.name),
       ...(item.themes || []).map((t: any) => t.name),
@@ -363,6 +367,10 @@ async function searchJikan(query: string): Promise<JikanAnimeResult[]> {
       trailerUrl,
     };
   });
+  } catch (err) {
+    console.warn('Jikan search error or timeout:', err);
+    return [];
+  }
 }
 
 /**
